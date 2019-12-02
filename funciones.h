@@ -5,7 +5,6 @@
 #ifndef PRACTICA_CALIFICADA_4_HARMSEN97_MASTER_FUNCIONES_H
 #define PRACTICA_CALIFICADA_4_HARMSEN97_MASTER_FUNCIONES_H
 
-
 #include "lodepng.h"
 #include <cmath>
 #include <iostream>
@@ -36,23 +35,23 @@ void encode(string_view filename, std::vector<unsigned char>& image, unsigned wi
 
 
 
-
-
-
 //red
-void Rfilter(string_view filename, std::vector<unsigned char>& image, unsigned w, unsigned h, unsigned h2) {
+void Rfilter(string_view filename, std::vector<unsigned char>& image, unsigned w, unsigned h0, unsigned h) {
 
-    for (size_t i = h; i < h2; i++) {
+    for (size_t i = h0; i < h; i++) {
         for (size_t j = 0; j < w * 4; j += 4) {
 
             image[(i * w * 4 + j + 1)]=0; // Green component
             image[(i * w * 4 + j + 2)]=0; // Blue component
 
-        }}
+        }
+    }
     unsigned error = lodepng::encode(filename.data(), image, w, h);
     if (error) {
         std::cout << "encoder error " << error << ": " << lodepng_error_text(error) << std::endl;
-    }}
+    }
+}
+
 void ParallelRFilter(string_view filename, std::vector<unsigned char>& image, unsigned w, unsigned h){
     thread t[4];
 
@@ -70,22 +69,24 @@ void ParallelRFilter(string_view filename, std::vector<unsigned char>& image, un
 
 
 
-
-
-
 //blue
-void Bfilter(string_view filename, std::vector<unsigned char>& image, unsigned w, unsigned h, unsigned h2) {
+void Bfilter(string_view filename, std::vector<unsigned char>& image, unsigned w, unsigned h0, unsigned h) {
 
-    for (size_t i = h; i < h2; i++) {
+    for (size_t i = h0; i < h; i++) {
         for (size_t j = 0; j < w * 4; j += 4) {
             image[(i * w * 4 + j + 0)]=0; // Red component
             image[(i * w * 4 + j + 1)]=0; // Green component
 
-        }}
+        }
+    }
+
+
     unsigned error = lodepng::encode(filename.data(), image, w, h);
     if (error) {
         std::cout << "encoder error " << error << ": " << lodepng_error_text(error) << std::endl;
-    }}
+    }
+}
+
 void ParallelBFilter(string_view filename, std::vector<unsigned char>& image, unsigned w, unsigned h){
     thread t[4];
 
@@ -95,24 +96,35 @@ void ParallelBFilter(string_view filename, std::vector<unsigned char>& image, un
 
     for(auto & i : t){
         i.join();
-    }}
+    }
+}
 
 
 
 
 
-    //green
-void Gfilter(string_view filename, std::vector<unsigned char>& image, unsigned w, unsigned h, unsigned h2) {
-    for (size_t i = h; i < h2; i++) {
+
+
+//green
+void Gfilter(string_view filename, std::vector<unsigned char>& image, unsigned w, unsigned h0, unsigned h) {
+
+    for (size_t i = h0; i < h; i++) {
         for (size_t j = 0; j < w * 4; j += 4) {
             image[(i * w * 4 + j + 0)]=0; // Red component
 
             image[(i * w * 4 + j + 2)]=0; // Blue component
-        }}
+
+        }
+    }
+
+
     unsigned error = lodepng::encode(filename.data(), image, w, h);
     if (error) {
         std::cout << "encoder error " << error << ": " << lodepng_error_text(error) << std::endl;
-    }}
+    }
+}
+
+
 void ParallelGFilter(string_view filename, std::vector<unsigned char>& image, unsigned w, unsigned h){
     thread t[4];
 
@@ -122,14 +134,14 @@ void ParallelGFilter(string_view filename, std::vector<unsigned char>& image, un
 
     for(auto & i : t){
         i.join();
-    }}
+    }
+}
 
 
 
 
 
-
-    //display R G B A values in console
+//display R G B A en la consola
 void printConsole(string_view filename, std::vector<unsigned char>& image, unsigned w, unsigned h) {
 
     for (size_t i = 0; i < h; i++) {
@@ -147,10 +159,13 @@ void printConsole(string_view filename, std::vector<unsigned char>& image, unsig
         std::cout <<endl;
 
     }
+
+
     unsigned error = lodepng::encode(filename.data(), image, w, h);
     if (error) {
         std::cout << "encoder error " << error << ": " << lodepng_error_text(error) << std::endl;
-    }}
+    }
+}
 
 
 
@@ -158,7 +173,8 @@ void printConsole(string_view filename, std::vector<unsigned char>& image, unsig
 
 
 
-    //funcion rotate
+
+
 void Rotate45(string_view filename, std::vector<unsigned char> &image, unsigned w, unsigned h) {
 
     auto aux = image;
@@ -175,7 +191,12 @@ void Rotate45(string_view filename, std::vector<unsigned char> &image, unsigned 
             aux[i * w * 4 + j + 2]=image[(j-i) * w * 4 + (i+j) + 2];
             aux[i * w * 4 + j + 3]=image[(j-i) * w * 4 + (i+j) + 3]; */
 
-        }}
+        }
+
+
+
+    }
+
     unsigned error = lodepng::encode(filename.data(), aux, w, h);
     if (error) {
         std::cout << "encoder error " << error << ": " << lodepng_error_text(error) << std::endl;
